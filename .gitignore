@@ -1,0 +1,5 @@
+# ignora os arquivos
+.config.env
+
+# ignora pastas
+.node_modules/
