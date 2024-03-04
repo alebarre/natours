@@ -6,18 +6,23 @@ const router = express.Router();
 
 router.post('/signup', authController.singUp);
 router.post('/login', authController.login);
-
 router.post('/forgotPassword', authController.forgotPassword);
 router.patch('/resetPassword/:token', authController.resetPassword);
 
-router.patch(
-  '/updateMyPassword',
-  authController.protect,
-  authController.updatePassword,
-);
+//IMPORTANT
+//All of the routes below needs to be protectd, so we don´t need to implemensts the same in each one of them.
+//Using the middleware below all other lines right below them will be protected, just because the middlewares run in sequence.
+router.use(authController.protect);
 
-router.patch('/updateMe', authController.protect, userController.updateMe);
-router.delete('/deleteMe', authController.protect, userController.deleteMe);
+router.patch('/updateMyPassword', authController.updatePassword);
+
+router.get('/me', userController.getMe, userController.getUser);
+router.patch('/updateMe', userController.updateMe);
+router.delete('/deleteMe', userController.deleteMe);
+
+//IMPORTANT
+//Below this point will be all restricted to, but only aloowed to 'admin'
+router.use(authController.restrictTo('admin'));
 
 router
   .route('/')
@@ -26,7 +31,7 @@ router
 
 router
   .route('/:id')
-  .get(authController.protect, userController.getUser)
+  .get(userController.getUser)
   .patch(userController.updateUser)
   .delete(userController.deleteUser);
 
